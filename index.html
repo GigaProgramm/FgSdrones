@@ -8,10 +8,12 @@
             font-family: Arial, sans-serif;
             display: flex;
             height: 100vh;
+            flex-direction: column;
         }
         .container {
             display: flex;
             width: 100%;
+            height: 100%;
         }
         .left-panel {
             background-color: #f0f0f0;
@@ -48,7 +50,7 @@
             align-items: center;
         }
         .toolbar .button {
-            background-color: #1abc9c;
+            background-color: #1aacbc;
             border: none;
             color: white;
             padding: 10px;
@@ -121,7 +123,7 @@
             outline: none;
         }
         .test-button {
-            background-color: #1abc9c;
+            background-color: #1aa4bc;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -139,10 +141,146 @@
             position: absolute;
             transition: all 0.5s;
         }
+        .mobile-toolbar {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background-color: #2c3e50;
+            padding: 10px;
+        }
+        .mobile-toolbar .button {
+            background-color: #1a96bc;
+            border: none;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .mobile-toolbar .button i {
+            font-size: 20px;
+        }
+        .mobile-content {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .mobile-content .code-editor {
+            height: 50%;
+        }
+        .mobile-content .grid {
+            height: 50%;
+        }
+        .mobile-content .test-button {
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-panel, .right-panel {
+                width: 100%;
+                height: 50%;
+            }
+            .mobile-toolbar {
+                display: flex;
+            }
+            .mobile-content {
+                display: flex;
+            }
+            .container, .left-panel, .right-panel {
+                display: none;
+            }
+        }
   </style>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
  </head>
  <body>
+  <div class="mobile-toolbar">
+   <div class="button" onclick="showCodeEditor()">
+    <i class="fas fa-code">
+    </i>
+   </div>
+   <div class="button" onclick="showGrid()">
+    <i class="fas fa-th">
+    </i>
+   </div>
+  </div>
+  <div class="mobile-content" id="mobile-content">
+   <div class="code-editor">
+    <textarea class="code-editor-content" id="mobile-code">
+start()
+forward(1)
+back(1)
+landing()
+    </textarea>
+   </div>
+   <div class="grid">
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+     <img alt="Robot image with four wheels and a green center" class="robot" height="50" id="mobile-robot" src="./web/images/free-icon-drone-4056808.png" width="50"/>
+    </div>
+   </div>
+   <button class="test-button" onclick="runMobileCode()">
+    Test
+   </button>
+  </div>
   <div class="container">
    <div class="left-panel">
     <div class="grid">
@@ -191,9 +329,9 @@
      <div>
      </div>
      <div>
-    </div>
-    <div>
-    </div>
+     </div>
+     <div>
+     </div>
      <div>
       <img alt="Robot image with four wheels and a green center" class="robot" height="50" id="robot" src="./web/images/free-icon-drone-4056808.png" width="50"/>
      </div>
@@ -231,18 +369,43 @@ landing()
     </button>
    </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
   <script>
-   var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
-            lineNumbers: true,
-            mode: "javascript",
-            theme: "dracula"
-        });
+   // CodeMirror-like editor implementation
+        class SimpleEditor {
+            constructor(textarea) {
+                this.textarea = textarea;
+                this.textarea.style.display = 'none';
+                this.editor = document.createElement('div');
+                this.editor.contentEditable = true;
+                this.editor.style.width = '100%';
+                this.editor.style.height = '100%';
+                this.editor.style.backgroundColor = '#1a252f';
+                this.editor.style.color = 'white';
+                this.editor.style.fontFamily = 'Courier New, Courier, monospace';
+                this.editor.style.fontSize = '16px';
+                this.editor.style.padding = '20px';
+                this.editor.style.boxSizing = 'border-box';
+                this.editor.innerText = this.textarea.value;
+                this.textarea.parentNode.insertBefore(this.editor, this.textarea.nextSibling);
+            }
+
+            getValue() {
+                return this.editor.innerText;
+            }
+
+            setValue(value) {
+                this.editor.innerText = value;
+            }
+        }
+
+        var editor = new SimpleEditor(document.getElementById("code"));
+        var mobileEditor = new SimpleEditor(document.getElementById("mobile-code"));
 
         var robot = document.getElementById("robot");
+        var mobileRobot = document.getElementById("mobile-robot");
         var gridSize = 100; // Size of each grid cell in pixels
         var position = { x: 0, y: 0 };
+        var mobilePosition = { x: 0, y: 0 };
 
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
@@ -269,6 +432,34 @@ landing()
                 } else if (command.startsWith('start(')) {
                     position = { x: 0, y: 0 };
                     robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
+                    await sleep(500);
+                } else if (command.startsWith('landing(')) {
+                    // Add landing logic if needed
+                }
+            }
+        }
+
+        async function runMobileCode() {
+            var code = mobileEditor.getValue();
+            var commands = code.split('\n');
+            for (var command of commands) {
+                if (command.startsWith('forward(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        mobilePosition.y -= gridSize;
+                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
+                        await sleep(500);
+                    }
+                } else if (command.startsWith('back(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        mobilePosition.y += gridSize;
+                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
+                        await sleep(500);
+                    }
+                } else if (command.startsWith('start(')) {
+                    mobilePosition = { x: 0, y: 0 };
+                    mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
                     await sleep(500);
                 } else if (command.startsWith('landing(')) {
                     // Add landing logic if needed
@@ -306,7 +497,17 @@ landing()
         }
 
         function showHelp() {
-            alert('Help: \n\n- Use start() to initialize the robot.\n- Use forward(n) to move the robot forward by n cells.\n- Use back(n) to move the robot backward by n cells.\n- Use landing() to land the robot.');
+            alert('Help: \n\n- Use start(); to initialize the drone.\n- Use forward(n); to move the drone forward by n cells.\n- Use back(n); to move the drone backward by n cells.\n- Use landing(); to land the drone.');
+        }
+
+        function showCodeEditor() {
+            document.querySelector('.code-editor').style.display = 'block';
+            document.querySelector('.grid').style.display = 'none';
+        }
+
+        function showGrid() {
+            document.querySelector('.code-editor').style.display = 'none';
+            document.querySelector('.grid').style.display = 'grid';
         }
 
         window.onload = function() {
