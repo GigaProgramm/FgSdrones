@@ -1,524 +1,207 @@
 <html>
- <head>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/dracula.min.css" rel="stylesheet"/>
-  <style>
-   body {
+<head>
+    <title>FgSDRONES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&family=Jockey+One&display=swap" rel="stylesheet">
+    <style>
+        body {
             margin: 0;
             font-family: Arial, sans-serif;
-            display: flex;
-            height: 100vh;
-            flex-direction: column;
         }
-        .container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        .left-panel {
-            background-color: #f0f0f0;
-            width: 60%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .header {
+            background-color: #5baabf;
+            color: white;
+            text-align: center;
             padding: 20px;
+            font-size: 36px;
+            font-family: 'Jockey One', sans-serif;
             position: relative;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 1px;
-            width: 100%;
-            height: 100%;
-            border: 1px solid #000;
-        }
-        .grid div {
-            border: 1px solid #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .toolbar {
-            display: flex;
-            gap: 20px;
-            padding: 10px;
-            background-color: #2c3e50;
-            border-radius: 10px 10px 0 0;
-            justify-content: center;
-            align-items: center;
-        }
-        .toolbar .button {
-            background-color: #1aacbc;
-            border: none;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .menu-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
             cursor: pointer;
         }
-        .toolbar .button i {
-            font-size: 20px;
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #34495e;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
         }
-        .right-panel {
-            background-color: #2c3e50;
-            width: 40%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
             color: white;
+            display: block;
+            transition: 0.3s;
         }
-        .code-editor {
-            background-color: #1a252f;
-            width: 100%;
-            height: 80%;
-            border-radius: 0 0 10px 10px;
-            padding: 20px;
-            box-sizing: border-box;
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
-            position: relative;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .sidebar a:hover {
+            background-color: #575757;
         }
-        .code-editor::before {
-            content: '';
+        .sidebar .closebtn {
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            background-color: #2c3e50;
-            border-radius: 5px 5px 0 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
         }
-        .code-editor::after {
-            content: 'Code Editor';
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            color: #ecf0f1;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .code-editor-content {
-            margin-top: 40px;
-            width: 100%;
-            height: calc(100% - 40px);
-            background: transparent;
-            border: none;
-            color: white;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
-            resize: none;
-            outline: none;
-        }
-        .test-button {
-            background-color: #1aa4bc;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .robot {
-            width: 50px;
-            height: 50px;
-            position: absolute;
-            transition: all 0.5s;
-        }
-        .mobile-toolbar {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            background-color: #2c3e50;
-            padding: 10px;
-        }
-        .mobile-toolbar .button {
-            background-color: #1a96bc;
-            border: none;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+        .main-content {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            background-color: #2c3e50;
+            padding: 20px;
+        }
+        .main-content > div {
+            flex: 1 1 100%;
+            margin: 5px;
+            height: 500px;
+            position: relative;
+        }
+        .image-box {
+            background-size: cover;
+            background-position: center;
+        }
+        .projects-box {
+            background-image: url('copter.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
             justify-content: center;
-            cursor: pointer;
-        }
-        .mobile-toolbar .button i {
-            font-size: 20px;
-        }
-        .mobile-content {
-            display: none;
-            flex-direction: column;
             align-items: center;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            font-family: 'Jersey 20', sans-serif;
+        }
+        .socialmedia-section {
+            background-color: #34495e;
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 36px;
+            font-weight: bold;
+            font-family: 'Jersey 20', sans-serif;
+        }
+        .socialmedia-section .icons {
+            display: flex;
             justify-content: center;
-            width: 100%;
-            height: 100%;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
-        .mobile-content .code-editor {
-            height: 50%;
+        .socialmedia-section .icons > a {
+            background-color: #5baabf;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s;
+            text-decoration: none;
         }
-        .mobile-content .grid {
-            height: 50%;
+        .socialmedia-section .icons > a:hover {
+            background-color: #3a8ca1;
         }
-        .mobile-content .test-button {
-            margin-top: 10px;
+        .socialmedia-section .icons i {
+            font-size: 36px;
+            color: white;
         }
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            .left-panel, .right-panel {
-                width: 100%;
-                height: 50%;
-            }
-            .mobile-toolbar {
-                display: flex;
-            }
-            .mobile-content {
-                display: flex;
-            }
-            .container, .left-panel, .right-panel {
-                display: none;
+        .footer {
+            background-color: #5baabf;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-family: 'Arial', sans-serif;
+        }
+        @media (min-width: 600px) {
+            .main-content > div {
+                flex: 1;
             }
         }
-  </style>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
- </head>
- <body>
-  <div class="mobile-toolbar">
-   <div class="button" onclick="showCodeEditor()">
-    <i class="fas fa-code">
-    </i>
-   </div>
-   <div class="button" onclick="showGrid()">
-    <i class="fas fa-th">
-    </i>
-   </div>
-  </div>
-  <div class="mobile-content" id="mobile-content">
-   <div class="code-editor">
-    <textarea class="code-editor-content" id="mobile-code">
-//fgd is js syntax language 
-// if you not understand 
-// code - open help button
-start();
-forward(1);
-back(1);
-landing();
-    </textarea>
-   </div>
-   <div class="grid">
-    <div>
+    </style>
+</head>
+<body>
+    <div class="header">
+        FgSDRONES
+        <div class="menu-icon" onclick="openNav()">
+            <i class="fas fa-bars"></i>
+        </div>
     </div>
-    <div>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#products" onclick="setLanguage('en')">Products</a>
+        <a href="sim.html" onclick="setLanguage('en')">Web simulator</a>
+        <a href="#progect2" onclick="setLanguage('en')">Unity game</a>
+        <a href="#progect3" onclick="setLanguage('en')">Ide and drones</a>
+        <a href="javascript:void(0)" onclick="toggleLanguage()">Switch Language</a>
     </div>
-    <div>
+    <div class="main-content">
+        <div class="image-box" style="background-image: url('websim.png');"></div>
+        <div class="projects-box" id="projects">PROGECTS</div>
+        <div class="image-box" style="background-image: url('unity.png');"></div>
     </div>
-    <div>
+    <div class="socialmedia-section" id="socialmedia">
+        Socialmedia
+        <div class="icons">
+            <a href="https://github.com/ArduRadioKot/FgSdrones/tree/main" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="https://discord.com" target="_blank"><i class="fab fa-discord"></i></a>
+            <a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a>
+        </div>
     </div>
-    <div>
+    <div class="footer" id="footer">
+        &copy; 2023 FgSDRONES. All rights reserved.
     </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-    </div>
-    <div>
-     <img alt="Robot image with four wheels and a green center" class="robot" height="50" id="mobile-robot" src="./web/images/free-icon-drone-4056808.png" width="50"/>
-    </div>
-   </div>
-   <button class="test-button" onclick="runMobileCode()">
-    Test
-   </button>
-  </div>
-  <div class="container">
-   <div class="left-panel">
-    <div class="grid">
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-     </div>
-     <div>
-      <img alt="Robot image with four wheels and a green center" class="robot" height="50" id="robot" src="./web/images/free-icon-drone-4056808.png" width="50"/>
-     </div>
-    </div>
-   </div>
-   <div class="right-panel">
-    <div class="toolbar">
-     <div class="button" onclick="saveCode()">
-      <i class="fas fa-save">
-      </i>
-     </div>
-     <div class="button" onclick="deleteCode()">
-      <i class="fas fa-trash">
-      </i>
-     </div>
-     <div class="button" onclick="openCode()">
-      <i class="fas fa-folder-open">
-      </i>
-     </div>
-     <div class="button" onclick="showHelp()">
-      <i class="fas fa-question-circle">
-      </i>
-     </div>
-    </div>
-    <div class="code-editor">
-     <textarea class="code-editor-content" id="code">
-start()
-forward(1)
-back(1)
-landing()
-     </textarea>
-    </div>
-    <button class="test-button" onclick="runCode()">
-     Test
-    </button>
-   </div>
-  </div>
-  <script>
-   // CodeMirror-like editor implementation
-        class SimpleEditor {
-            constructor(textarea) {
-                this.textarea = textarea;
-                this.textarea.style.display = 'none';
-                this.editor = document.createElement('div');
-                this.editor.contentEditable = true;
-                this.editor.style.width = '100%';
-                this.editor.style.height = '100%';
-                this.editor.style.backgroundColor = '#1a252f';
-                this.editor.style.color = 'white';
-                this.editor.style.fontFamily = 'Courier New, Courier, monospace';
-                this.editor.style.fontSize = '16px';
-                this.editor.style.padding = '20px';
-                this.editor.style.boxSizing = 'border-box';
-                this.editor.innerText = this.textarea.value;
-                this.textarea.parentNode.insertBefore(this.editor, this.textarea.nextSibling);
-            }
 
-            getValue() {
-                return this.editor.innerText;
-            }
+    <script>
+        let currentLanguage = 'en';
 
-            setValue(value) {
-                this.editor.innerText = value;
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+
+        function toggleLanguage() {
+            if (currentLanguage === 'en') {
+                setLanguage('ru');
+            } else {
+                setLanguage('en');
             }
         }
 
-        var editor = new SimpleEditor(document.getElementById("code"));
-        var mobileEditor = new SimpleEditor(document.getElementById("mobile-code"));
-
-        var robot = document.getElementById("robot");
-        var mobileRobot = document.getElementById("mobile-robot");
-        var gridSize = 100; // Size of each grid cell in pixels
-        var position = { x: 0, y: 0 };
-        var mobilePosition = { x: 0, y: 0 };
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        async function runCode() {
-            var code = editor.getValue();
-            var commands = code.split('\n');
-            for (var command of commands) {
-                if (command.startsWith('forward(')) {
-                    var steps = parseInt(command.match(/\d+/)[0]);
-                    for (var i = 0; i < steps; i++) {
-                        position.y -= gridSize;
-                        robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
-                        await sleep(500);
-                    }
-                } else if (command.startsWith('back(')) {
-                    var steps = parseInt(command.match(/\d+/)[0]);
-                    for (var i = 0; i < steps; i++) {
-                        position.y += gridSize;
-                        robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
-                        await sleep(500);
-                    }
-                } else if (command.startsWith('start(')) {
-                    position = { x: 0, y: 0 };
-                    robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
-                    await sleep(500);
-                } else if (command.startsWith('landing(')) {
-                    // Add landing logic if needed
-                }
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            if (lang === 'ru') {
+                document.querySelector('.sidebar a[href="#products"]').innerText = 'Продукты';
+                document.querySelector('.sidebar a[href="sim.html"]').innerText = 'Веб симулятор';
+                document.querySelector('.sidebar a[href="#progect2"]').innerText = 'Игра на юнити';
+                document.querySelector('.sidebar a[href="#progect3"]').innerText = 'Редактор кода для квадрокоптера';
+                document.getElementById('projects').innerText = 'ПРОЕКТЫ';
+                document.getElementById('socialmedia').innerHTML = 'Социальные сети<div class="icons"><a href="https://github.com/ArduRadioKot/FgSdrones/tree/main" target="_blank"><i class="fab fa-github"></i></a><a href="https://discord.com" target="_blank"><i class="fab fa-discord"></i></a><a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a></div>';
+                document.getElementById('footer').innerText = '© 2023 FgSDRONES. Все права защищены.';
+            } else {
+                document.querySelector('.sidebar a[href="#products"]').innerText = 'Products';
+                document.querySelector('.sidebar a[href="#progect1"]').innerText = 'Web simulator';
+                document.querySelector('.sidebar a[href="#progect2"]').innerText = 'Unity game';
+                document.querySelector('.sidebar a[href="#progect3"]').innerText = 'Ide and drone';
+                document.getElementById('projects').innerText = 'PROGECTS';
+                document.getElementById('socialmedia').innerHTML = 'Socialmedia<div class="icons"><a href="https://github.com/ArduRadioKot/FgSdrones/tree/main" target="_blank"><i class="fab fa-github"></i></a><a href="https://discord.com" target="_blank"><i class="fab fa-discord"></i></a><a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a></div>';
+                document.getElementById('footer').innerText = '© 2023 FgSDRONES. All rights reserved.';
             }
         }
-
-        async function runMobileCode() {
-            var code = mobileEditor.getValue();
-            var commands = code.split('\n');
-            for (var command of commands) {
-                if (command.startsWith('forward(')) {
-                    var steps = parseInt(command.match(/\d+/)[0]);
-                    for (var i = 0; i < steps; i++) {
-                        mobilePosition.y -= gridSize;
-                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
-                        await sleep(500);
-                    }
-                } else if (command.startsWith('back(')) {
-                    var steps = parseInt(command.match(/\d+/)[0]);
-                    for (var i = 0; i < steps; i++) {
-                        mobilePosition.y += gridSize;
-                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
-                        await sleep(500);
-                    }
-                } else if (command.startsWith('start(')) {
-                    mobilePosition = { x: 0, y: 0 };
-                    mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
-                    await sleep(500);
-                } else if (command.startsWith('landing(')) {
-                    // Add landing logic if needed
-                }
-            }
-        }
-
-        function saveCode() {
-            var code = editor.getValue();
-            localStorage.setItem('savedCode', code);
-            alert('Code saved!');
-        }
-
-        function deleteCode() {
-            localStorage.removeItem('savedCode');
-            editor.setValue('');
-            alert('Code deleted!');
-        }
-
-        function openCode() {
-            var input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.txt,.js';
-            input.onchange = function(event) {
-                var file = event.target.files[0];
-                if (file) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        editor.setValue(e.target.result);
-                    };
-                    reader.readAsText(file);
-                }
-            };
-            input.click();
-        }
-
-        function showHelp() {
-            alert('Help: \n\n- Use start(); to initialize the drone.\n- Use forward(n); to move the drone forward by n cells.\n- Use back(n); to move the drone backward by n cells.\n- Use landing(); to land the drone.');
-        }
-
-        function showCodeEditor() {
-            document.querySelector('.code-editor').style.display = 'block';
-            document.querySelector('.grid').style.display = 'none';
-        }
-
-        function showGrid() {
-            document.querySelector('.code-editor').style.display = 'none';
-            document.querySelector('.grid').style.display = 'grid';
-        }
-
-        window.onload = function() {
-            var savedCode = localStorage.getItem('savedCode');
-            if (savedCode) {
-                editor.setValue(savedCode);
-            }
-        }
-  </script>
- </body>
+    </script>
+</body>
 </html>
