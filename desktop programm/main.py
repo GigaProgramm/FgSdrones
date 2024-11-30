@@ -1,6 +1,9 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import simpledialog, filedialog, messagebox
+import serial
+import serial.tools.list_ports
+import time
 
 class textIde(ctk.CTk):
     def __init__(self, master=None):
@@ -12,7 +15,7 @@ class textIde(ctk.CTk):
         self.toolbar = ctk.CTkFrame(self.master, width=50, height=768)
         self.toolbar.pack(side="left", fill="y")
 
-        self.label = ctk.CTkLabel(self.toolbar, text="ForgeeCore", font=("Arial", 15))
+        self.label = ctk.CTkLabel(self.toolbar, text="FGSDr", font=("Arial", 15))
         self.label.pack(pady=10)
 
         self.paint_button = ctk.CTkButton(self.toolbar, text="Open", command=self.save)
@@ -24,7 +27,20 @@ class textIde(ctk.CTk):
         self.run_button = ctk.CTkButton(self.toolbar, text="Quit", command=self.quit)
         self.run_button.pack(fill="x", pady=10)
 
+        # Arduino IDE components
+        self.port_label = ctk.CTkLabel(self.toolbar, text="Выберите последовательный порт:")
+        self.port_label.pack(pady=5)
 
+        self.port_combo = ctk.CTkComboBox(self.toolbar, values=self.get_serial_ports())
+        self.port_combo.pack(pady=5)
+
+        # Set the first port as the default selection if there are any ports available
+        ports = self.get_serial_ports()
+        if ports:
+            self.port_combo.set(ports[0])  # Выбор первого порта по умолчанию
+
+        self.send_button = ctk.CTkButton(self.toolbar, text="Отправить на Arduino", command=self.send_code)
+        self.send_button.pack(pady=5)
 
         self.text_area = tk.Text(self, font=("Consolas", 12))
         self.text_area.pack(fill="both", side=ctk.RIGHT, expand=True)
@@ -37,17 +53,39 @@ class textIde(ctk.CTk):
         self.text_area.tag_config('clas', foreground='#50adfa')  # green-blue
         self.text_area.tag_config('def_func', foreground='#dee86d')  # light green
 
-        self.keywords = ['if', 'else', 'for', 'while', 'import',  'class', 'function', 'func', 'return', '++', '+', '>', '<', '=', '@obj', 'case', 'forward()', 'back()', 'start()', 'landing()']
+        self.keywords = ['if', 'else', 'for', 'while', 'import', 'class', 'function', 'func', 'return', '++', '+', '>', '<', '=', '@obj', 'case', 'forward()', 'back()', 'start()', 'landing()']
         self.builtins = ['self', 'print', 'len', 'range', 'list', 'dict', 'set', 'int', 'float', 'str', 'bool', 'var', 'let']
         self.strings = ['"', "'", '"""', "'''"]
         self.comments = ['// ']
-        self.clas = ['class', 'function',  '++', '+', '>', '<', '=', '@obj', 'case']
+        self.clas = ['class', 'function', '++', '+', '>', '<', '=', '@obj', 'case']
 
-        # self.text_area.bind("<KeyRelease>", self.auto_brace)
         self.text_area.bind("<KeyRelease>", self.highlight_syntax_realtime)  
         self.line_number_area = tk.Text(self, width=5, height=400, font=("Consolas", 12))
         self.line_number_area.pack(side=ctk.LEFT, fill="y")
         self.update_line_numbers()
+
+        self.serial_port = None
+
+    def get_serial_ports(self):
+        """Получить список доступных последовательных портов"""
+        ports = [port.device for port in serial.tools.list_ports.comports()]
+        return ports
+
+    def send_code(self):
+        """Отправить код на выбранный последовательный порт"""
+        if self.serial_port is None or not self.serial_port.is_open:
+            try:
+                selected_port = self.port_combo.get()
+                self.serial_port = serial.Serial(selected_port, 9600, timeout=1)
+                time.sleep(2)  # Ждем, чтобы Arduino инициализировался
+            except Exception as e:
+                messagebox.showerror("Ошибка", f"Не удалось открыть порт: {e}")
+                return
+
+        code = self.text_area.get("1.0", tk.END)
+        self.serial_port.write(code.encode('utf-8'))  # Отправка кода на Arduino
+        time.sleep(2)  # Ждем, чтобы Arduino обработал код
+        print("Код отправлен на Arduino!")
 
     def auto_brace(self, event):
         if event.char in "{}[]()<>":
@@ -134,26 +172,29 @@ class textIde(ctk.CTk):
                     start = f'{i}.{line.index(comment)}'
                     end = f'{i}.end'
                     self.text_area.tag_add('comment', start, end)
+
     def run(self):
         self.mainloop()
 
     def open(self):
         self.text_area.delete("1.0", "end")
-        file_path = filedialog.asksaveasfilename(defaultextension=".fs", filetypes=[ ('C++ files', '*.h'), ('FrogeScript', '*.fs'), ('Python files')])
-        # If a file was selected, save the contents of the text editor to the file
+        file_path = filedialog.asksaveasfilename(defaultextension=".fde", filetypes=[('FDE', '*.fde')])
         if file_path:
             with open(file_path, 'w') as file:
-                code = self.text_editor.get("1.0", tk.END)
+                code = self.text_area.get("1.0", tk.END)
                 file.write(code)
+
     def save(self):
-        file_path = filedialog.askopenfilename(filetypes=[('FrogeScript', '*.fs'), ('C++ files', '*.cpp'), ('Python files')])
-    # If a file was selected, open it and insert its contents into the text editor
+        file_path = filedialog.askopenfilename(filetypes=[('FDE', '*.fde')])
         if file_path:
             with open(file_path, 'r') as file:
                 code = file.read()
-                self.text_editor.delete('1.0', tk.END)
-                self.text_editor.insert(tk.END, code)
+                self.text_area.delete('1.0', tk.END)
+                self.text_area.insert(tk.END, code)
+
     def quit(self):
+        if self.serial_port and self.serial_port.is_open:
+            self.serial_port.close()
         self.destroy()
         self.quit()
 
