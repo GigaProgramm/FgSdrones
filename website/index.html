@@ -142,7 +142,8 @@
         <a href="#products" onclick="setLanguage('en')">Products</a>
         <a href="sim.html" onclick="setLanguage('en')">Web simulator</a>
         <a href="#progect2" onclick="setLanguage('en')">Unity game</a>
-        <a href="#progect3" onclick="setLanguage('en')">Ide and drones</a>
+        <a href="ide.html" onclick="setLanguage('en')">Ide and drones</a>
+        <a href="about.html" onclick="setLanguage('en')">Documentation</a>
         <a href="javascript:void(0)" onclick="toggleLanguage()">Switch Language</a>
     </div>
     <div class="main-content">
@@ -163,45 +164,6 @@
         &copy; 2023 FgSDRONES. All rights reserved.
     </div>
 
-    <script>
-        let currentLanguage = 'en';
-
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-        }
-
-        function toggleLanguage() {
-            if (currentLanguage === 'en') {
-                setLanguage('ru');
-            } else {
-                setLanguage('en');
-            }
-        }
-
-        function setLanguage(lang) {
-            currentLanguage = lang;
-            if (lang === 'ru') {
-                document.querySelector('.sidebar a[href="#products"]').innerText = 'Продукты';
-                document.querySelector('.sidebar a[href="sim.html"]').innerText = 'Веб симулятор';
-                document.querySelector('.sidebar a[href="#progect2"]').innerText = 'Игра на юнити';
-                document.querySelector('.sidebar a[href="#progect3"]').innerText = 'Редактор кода для квадрокоптера';
-                document.getElementById('projects').innerText = 'ПРОЕКТЫ';
-                document.getElementById('socialmedia').innerHTML = 'Социальные сети<div class="icons"><a href="https://github.com/ArduRadioKot/FgSdrones/tree/main" target="_blank"><i class="fab fa-github"></i></a><a href="https://discord.com" target="_blank"><i class="fab fa-discord"></i></a><a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a></div>';
-                document.getElementById('footer').innerText = '© 2023 FgSDRONES. Все права защищены.';
-            } else {
-                document.querySelector('.sidebar a[href="#products"]').innerText = 'Products';
-                document.querySelector('.sidebar a[href="#progect1"]').innerText = 'Web simulator';
-                document.querySelector('.sidebar a[href="#progect2"]').innerText = 'Unity game';
-                document.querySelector('.sidebar a[href="#progect3"]').innerText = 'Ide and drone';
-                document.getElementById('projects').innerText = 'PROGECTS';
-                document.getElementById('socialmedia').innerHTML = 'Socialmedia<div class="icons"><a href="https://github.com/ArduRadioKot/FgSdrones/tree/main" target="_blank"><i class="fab fa-github"></i></a><a href="https://discord.com" target="_blank"><i class="fab fa-discord"></i></a><a href="https://telegram.org" target="_blank"><i class="fab fa-telegram"></i></a><a href="https://vk.com" target="_blank"><i class="fab fa-vk"></i></a></div>';
-                document.getElementById('footer').innerText = '© 2023 FgSDRONES. All rights reserved.';
-            }
-        }
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>

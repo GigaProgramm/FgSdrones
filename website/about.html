@@ -1,0 +1,139 @@
+<html>
+<head>
+    <title>FgSDRONES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&family=Jockey+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2C3E50;
+            color: #FFFFFF;
+        }
+        .header {
+            background-color: #5BAABF;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 36px;
+            font-family: 'Jockey One', sans-serif;
+            position: relative;
+            cursor: pointer;
+        }
+        .menu-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #34495E;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
+            color: white;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+        .content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        .buttons a {
+            display: inline-block;
+            background-color: #5BAABF;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        .commands {
+            text-align: left;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        .commands p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        @media (max-width: 600px) {
+            .content {
+                padding: 10px;
+            }
+            .buttons a {
+                margin: 5px 0;
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header" onclick="location.href='index.html'">
+        FgSDRONES
+        <div class="menu-icon" onclick="openNav(event)">
+            <i class="fas fa-bars"></i>
+        </div>
+    </div>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#products" onclick="setLanguage('en')">Products</a>
+        <a href="sim.html" onclick="setLanguage('en')">Web simulator</a>
+        <a href="#progect2" onclick="setLanguage('en')">Unity game</a>
+        <a href="ide.html" onclick="setLanguage('en')">Ide and drones</a>
+        <a href="javascript:void(0)" onclick="toggleLanguage()">Switch Language</a>
+    </div>
+    <div class="content">
+        <p>Язык программирования <strong>FGDS</strong> — самый простой и быстрый язык программирования дронов.<br>
+        Работать с языком очень просто. Сама программа написана в редакторе кода на базе <strong>FrogeeCodeIDE</strong> с простым синтаксисом.</p>
+        <p>скачать документацию можно с сайта</p>
+        <div class="buttons">
+            <a href="#">EN</a>
+            <a href="#">RU</a>
+        </div>
+        <div class="commands">
+            <p><strong>Команды языка:</strong></p>
+            <p><strong>start();</strong> - команда для запуска квадрокоптера поднимает его в воздух, в следующих версиях в скриптах можно будет указать высоту на которую будет взлетать квадрокоптер.</p>
+            <p><strong>forward();</strong> - команда квадрокоптеру пролететь вперед на определенное количество метров. Расстояние указано в скобках.</p>
+            <p><strong>back();</strong> - команда квадрокоптеру пролететь назад на определенное количество метров. Расстояние указано в скобках.</p>
+            <p><strong>landing();</strong> - команда посадить квадрокоптер на землю.</p>
+            <p><strong>right();</strong> - команда пролететь вправо на определенное количество метров, количество метров указано в скобках.</p>
+            <p><strong>left();</strong> - команда лететь влево на определенное количество метров, количество метров указано в скобках.</p>
+            <p><strong>up(); down(); rotate();</strong> - команды находятся в разработке, в будущем помимо команд появятся условия, циклы и переменные</p>
+            <p>комментарии в коде можно оставлять без специальных символов, интерпретатор их пропустит</p>
+        </div>
+    </div>
+    <script src="doc.js"></script>
+</body>
+</html>
