@@ -1,0 +1,166 @@
+<html>
+<head>
+    <title>FgSDRONES</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&family=Jockey+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #2C3E50;
+            color: #FFFFFF;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background-color: #5BAABF;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 36px;
+            font-family: 'Jockey One', sans-serif;
+            position: relative;
+            cursor: pointer;
+        }
+        .menu-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #34495E;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
+            color: white;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #575757;
+        }
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+        .content {
+            background-color: #2C3E50;
+            color: white;
+            padding: 20px;
+            font-size: 18px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        .footer {
+            display: flex;
+            justify-content: space-around;
+            background-color: #5BAABF;
+            padding: 10px 0;
+        }
+        .footer a {
+            background-color: #5BAABF;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Jersey 20', sans-serif;
+            margin: 0 10px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .footer a:hover {
+            background-color: #4a8a8a;
+        }
+        @media (max-width: 600px) {
+            .content {
+                padding: 10px;
+            }
+            .footer a {
+                margin: 5px 0;
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        FgSDRONES
+        <i class="fas fa-bars menu-icon" onclick="openNav()"></i>
+    </div>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#products">Products</a>
+        <a href="sim.html">Web simulator</a>
+        <a href="#progect2">Unity game</a>
+        <a href="ide.html">Ide and drones</a>
+        <a href="javascript:void(0)" onclick="toggleLanguage()">Switch Language</a>
+    </div>
+    <div class="content" id="content">
+        <p>The project includes the following components:</p>
+        <ul>
+            <li><strong>Web simulator</strong> - designed for quick testing of drone programs without using additional modules.</li>
+            <li><strong>Game</strong> - provides the ability to assemble drones, program them and use them in various scenarios.</li>
+            <li><strong>IDE and code editor</strong> - allow you to create programs for drones and download them directly to devices. It also supports the installation of your own modules to expand the functionality of drones. The list of supported modules can be found in the project documentation.</li>
+        </ul>
+        <p>This project is aimed at a wide audience, including beginners, teachers, organizers and participants of robotics and programming competitions. It provides convenient tools for learning the basics of drone programming, creating your own projects and participating in competitions of various levels.</p>
+    </div>
+    <div class="footer">
+        <a href="sim.html">WEB</a>
+        <a href="ide.html">IDE</a>
+        <a href="game.html">game</a>
+    </div>
+    <script>
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+
+        function toggleLanguage() {
+            const content = document.getElementById('content');
+            if (content.innerHTML.includes('The project includes the following components:')) {
+                content.innerHTML = `
+                    <p>Проект включает в себя следующие компоненты:</p>
+                    <ul>
+                        <li><strong>Веб-симулятор</strong> - предназначен для быстрой проверки программ дронов без использования дополнительных модулей.</li>
+                        <li><strong>Игра</strong> - предоставляет возможность собирать дроны, программировать их и использовать в различных сценариях.</li>
+                        <li><strong>IDE и редактор кода</strong> - позволяют создавать программы для дронов и загружать их непосредственно на устройства. Также поддерживается установка собственных модулей для расширения функциональности дронов. Список поддерживаемых модулей можно найти в документации проекта.</li>
+                    </ul>
+                    <p>Этот проект ориентирован на широкую аудиторию, включая начинающих, учителей, организаторов и участников соревнований по робототехнике и программированию. Он предоставляет удобные инструменты для изучения основ программирования дронов, создания собственных проектов и участия в соревнованиях различного уровня.</p>
+                `;
+            } else {
+                content.innerHTML = `
+                    <p>The project includes the following components:</p>
+                    <ul>
+                        <li><strong>Web simulator</strong> - designed for quick testing of drone programs without using additional modules.</li>
+                        <li><strong>Game</strong> - provides the ability to assemble drones, program them and use them in various scenarios.</li>
+                        <li><strong>IDE and code editor</strong> - allow you to create programs for drones and download them directly to devices. It also supports the installation of your own modules to expand the functionality of drones. The list of supported modules can be found in the project documentation.</li>
+                    </ul>
+                    <p>This project is aimed at a wide audience, including beginners, teachers, organizers and participants of robotics and programming competitions. It provides convenient tools for learning the basics of drone programming, creating your own projects and participating in competitions of various levels.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
