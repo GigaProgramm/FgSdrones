@@ -1,6 +1,7 @@
 # Fg drones
 The FGsDrones project is designed to assemble and program drones. The main tool used is the FGD programming language (a simplified version of FroggeeScript).
  ---
+ # Web-site - https://arduradiokot.github.io/FgSdrones/
 The project includes the following components:
 
 * Web simulator - designed for quick testing of drone programs without using additional modules.
