@@ -1,63 +1,5 @@
-#include <U8g2lib.h>
 #define Val_Int 10
-
 // Класс DisplayManager
-
-class Display {
-public:
-    static U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2;
-    static void begin() {
-        u8g2.begin();
-        u8g2.clearDisplay();
-    }
-    static void displayText(const String &params) {
-        int startQuo = params.indexOf('"');
-        int endQuo = params.indexOf('"', startQuo + 1);
-        int firstDot = params.indexOf(',', endQuo + 1);
-        int secondDot = params.indexOf(',', firstDot + 1);
-
-        if (startQuo == -1 || endQuo == -1 || startQuo >= endQuo) return;
-
-        int x = params.substring(firstDot + 2, secondDot).toInt();
-        int y = params.substring(secondDot + 2).toInt();
-        String text = params.substring(startQuo + 1, endQuo);
-
-        u8g2.setFont(u8g2_font_ncenB08_tr);
-        u8g2.drawStr(x, y, text.c_str());
-        u8g2.sendBuffer();
-    }
-
-    static void displayRect(const String &params) {
-        int comma1 = params.indexOf(',');
-        int comma2 = params.indexOf(',', comma1 + 1);
-        int comma3 = params.indexOf(',', comma2 + 1);
-
-        if (comma1 == -1 || comma2 == -1 || comma3 == -1) return;
-
-        int x = params.substring(0, comma1).toInt();
-        int y = params.substring(comma1 + 2, comma2).toInt();
-        int width = params.substring(comma2 + 2, comma3).toInt();
-        int height = params.substring(comma3 + 2).toInt();
-
-        u8g2.drawBox(x, y, width, height);
-        u8g2.sendBuffer();
-    }
-
-    static void displayPixel(const String &params) {
-        int dot = params.indexOf(',');
-        int x = params.substring(0, dot).toInt();
-        int y = params.substring(dot + 2).toInt();
-
-        u8g2.drawPixel(x, y);
-        u8g2.sendBuffer();
-    }
-
-    static void displayClear() {
-        u8g2.clearDisplay();
-        u8g2.sendBuffer();
-    }
-
-};
 
 class MyPrint {
 public:
@@ -83,7 +25,6 @@ public:
 };
 
 // Инициализация дисплея
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C Display::u8g2(U8G2_R0, SCL, SDA, U8X8_PIN_NONE);
 
 // Класс Pin
 class Pin {
@@ -133,6 +74,8 @@ public:
         }
     }
 };
+
+
 
 // Вспомогательные функции
 bool isNumber(const String &str) {

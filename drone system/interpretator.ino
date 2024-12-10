@@ -2,7 +2,6 @@
 
 void setup() {
     Serial.begin(115200);
-    Display::begin();
 }
 
 void loop() {
