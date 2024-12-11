@@ -3,6 +3,7 @@
 #include "Del.h"
 #include "Pin.h"
 #include "Print.h"
+#include "DroneCommand.h"
 // Парсер команд.
 class CommandParser {
 public:
@@ -49,8 +50,22 @@ public:
         //Del.h
         } else if (command_1 == "delay"){
             del.Delay(params);
+        //DroneCommand.h
+        } else if (command_1 == "drone"){
+            if (command_2 == "init"){
+              droneComm.drone_init();
+            } else if (command_2 == "check_x"){
+              droneComm.check_accel_x();
+            } else if (command_2 == "check_y"){
+              droneComm.check_accel_y();
+            } else if (command_2 == "check_z"){
+              droneComm.check_accel_z();
+            }
+            else {
+              Serial.println("Error: command not found");
+            }
         } else {
-            Serial.println("Error: command not found");
+          Serial.println("Error: command not found");
         }
     }
 };
