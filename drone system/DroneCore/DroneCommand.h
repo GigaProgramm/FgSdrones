@@ -4,7 +4,7 @@
 #include <basicMPU6050.h> 
 
 #define LU_Motor 7
-#define RU_Motor 6
+#define RU_Motor 0
 #define LD_Motor 5
 #define RD_Motor 10 
 
