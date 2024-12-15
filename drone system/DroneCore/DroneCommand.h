@@ -14,7 +14,7 @@ basicMPU6050<> imu;
 float x_cor = -1;
 float y_cor = -1;
 float dev_x, dev_y;
-
+int lu_cor, ru_cor, ld_cor, rd_cor;
 class DroneComm {
 public:
     void drone_init() {
@@ -58,38 +58,14 @@ public:
 
 private:
     void up_check() {
-        int x_otkl, y_otkl;
-        x_otkl = abs(128 * imu.ax());
-        y_otkl = abs(128 * imu.ay());
-        if(x_otkl < 0)x_otkl = 0;
-        if(y_otkl < 0)y_otkl = 0;
-        if (((abs(imu.ax() * cnst)) - x_cor) >= x_cor) {
-            if ((imu.ax() * cnst) < 0) {
-                analogWrite(LU_Motor, 64 - x_otkl);
-                analogWrite(RU_Motor, 64 - x_otkl);
-                analogWrite(LD_Motor, 64 - x_otkl);
-                analogWrite(RD_Motor, 64 - x_otkl);
-            } else {
-                analogWrite(LU_Motor, 64 - x_otkl);
-                analogWrite(RU_Motor, 64 - x_otkl);
-                analogWrite(LD_Motor, 64 - x_otkl);
-                analogWrite(RD_Motor, 64 - x_otkl);
-            }
-        }
-
-        if (((abs(imu.ay() * cnst)) - y_cor) >= y_cor) {
-            if ((imu.ay() * cnst) < 0) {
-                analogWrite(RU_Motor, 64 + y_otkl);
-                analogWrite(RD_Motor, 64 + y_otkl);
-                analogWrite(LU_Motor, 64 - y_otkl);
-                analogWrite(LD_Motor, 64 - y_otkl);
-            } else {
-                analogWrite(RU_Motor, 64 - y_otkl);
-                analogWrite(RD_Motor, 64 - y_otkl);
-                analogWrite(LU_Motor, 64 + y_otkl);
-                analogWrite(LD_Motor, 64 + y_otkl);
-            }
-        }
+      lu_cor = 64 + (imu.ax() * 64) + (imu.ay() * 64);
+      ru_cor = 64 + (imu.ax() * 64) - (imu.ay() * 64);
+      ld_cor = 64 - (imu.ax() * 64) + (imu.ay() * 64);
+      rd_cor = 64 - (imu.ax() * 64) - (imu.ay() * 64);
+      analogWrite(LU_Motor, lu_cor);
+      analogWrite(RU_Motor, ru_cor);
+      analogWrite(LD_Motor, ld_cor);
+      analogWrite(RD_Motor, rd_cor);
     }
 };
 
