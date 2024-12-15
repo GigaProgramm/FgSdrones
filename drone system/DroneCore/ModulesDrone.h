@@ -60,6 +60,8 @@ public:
               droneComm.check_accel_y();
             } else if (command_2 == "check_z"){
               droneComm.check_accel_z();
+            } else if (command_2 == "up"){
+              droneComm.up(params);
             }
             else {
               Serial.println("Error: command not found");
