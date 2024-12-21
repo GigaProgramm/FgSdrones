@@ -4,12 +4,14 @@ from tkinter import simpledialog, filedialog, messagebox
 import serial
 import serial.tools.list_ports
 import time
+ctk.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
+ctk.set_default_color_theme("blue")
 
 class textIde(ctk.CTk):
     def __init__(self, master=None):
         super().__init__()
 
-        self.title("Редактор кода")
+        self.title("DroneIDE")
         self.geometry("800x600")
         self.root = ctk.CTk()
         self.toolbar = ctk.CTkFrame(self.master, width=50, height=768)
@@ -28,7 +30,7 @@ class textIde(ctk.CTk):
         self.run_button.pack(fill="x", pady=10)
 
         # Arduino IDE components
-        self.port_label = ctk.CTkLabel(self.toolbar, text="Выберите последовательный порт:")
+        self.port_label = ctk.CTkLabel(self.toolbar, text="com port:")
         self.port_label.pack(pady=5)
 
         self.port_combo = ctk.CTkComboBox(self.toolbar, values=self.get_serial_ports())
@@ -39,7 +41,7 @@ class textIde(ctk.CTk):
         if ports:
             self.port_combo.set(ports[0])  # Выбор первого порта по умолчанию
 
-        self.send_button = ctk.CTkButton(self.toolbar, text="Отправить на Arduino", command=self.send_code)
+        self.send_button = ctk.CTkButton(self.toolbar, text="Upload", command=self.send_code)
         self.send_button.pack(pady=5)
 
         self.text_area = tk.Text(self, font=("Consolas", 12))
