@@ -10,9 +10,7 @@
 #define cnst 9.8
 
 basicMPU6050<> imu;
-
-float x_cor = -1;
-float y_cor = -1;
+bool start_drone;
 float dev_x, dev_y;
 int lu_cor, ru_cor, ld_cor, rd_cor;
 class DroneComm {
@@ -27,6 +25,7 @@ public:
         pinMode(RD_Motor, OUTPUT);
         Serial.println(dev_x);
         Serial.println(dev_y);
+        start_drone = true;
     }
 
     void check_accel_x() {
@@ -43,21 +42,27 @@ public:
 
     
 
-    void up(String params) {
-        analogWrite(LU_Motor, 64);
-        analogWrite(RU_Motor, 64);
-        analogWrite(LD_Motor, 64);
-        analogWrite(RD_Motor, 64);
+    void check_up(String params, String comma) {
         unsigned long duration_ms = params.toInt();
         unsigned long start_time = millis();
+        String type = comma;
         while (millis() - start_time < duration_ms) {
-            up_check();
+          if(type == "up"){
+            up();
+          } else if (type == "idle") {
+              idle();
+          } else if (type == "forward") {
+              forward();
+          } else if (type == "back"){
+              back();
+          }
         }
+        idle();
         Serial.println("complete");
     }
 
 private:
-    void up_check() {
+    void up() {
       lu_cor = 64 + (imu.ax() * 64) + (imu.ay() * 64);
       ru_cor = 64 + (imu.ax() * 64) - (imu.ay() * 64);
       ld_cor = 64 - (imu.ax() * 64) + (imu.ay() * 64);
@@ -67,6 +72,42 @@ private:
       analogWrite(LD_Motor, ld_cor);
       analogWrite(RD_Motor, rd_cor);
     }
+
+    void idle() {
+      while (start_drone) {
+        lu_cor = 64 + (imu.ax() * 64) + (imu.ay() * 64) - ((imu.az() * 32) - 34.20  );
+        ru_cor = 64 + (imu.ax() * 64) - (imu.ay() * 64) - ((imu.az() * 32) - 34.20  );
+        ld_cor = 64 - (imu.ax() * 64) + (imu.ay() * 64) - ((imu.az() * 32) - 34.20  );
+        rd_cor = 64 - (imu.ax() * 64) - (imu.ay() * 64) - ((imu.az() * 32) - 34.20  );
+        analogWrite(LU_Motor, lu_cor);
+        analogWrite(RU_Motor, ru_cor);
+        analogWrite(LD_Motor, ld_cor);
+        analogWrite(RD_Motor, rd_cor);
+      }
+    }
+
+    void forward(){
+        lu_cor = 64 + ((imu.ax() * 64) + (imu.ay() * 64)) - 30;
+        ru_cor = 64 + ((imu.ax() * 64) - (imu.ay() * 64)) - 30;
+        ld_cor = 64 - ((imu.ax() * 64) + (imu.ay() * 64)) + 25;
+        rd_cor = 64 - ((imu.ax() * 64) - (imu.ay() * 64)) + 25;
+        analogWrite(LU_Motor, lu_cor);
+        analogWrite(RU_Motor, ru_cor);
+        analogWrite(LD_Motor, ld_cor);
+        analogWrite(RD_Motor, rd_cor);
+    }
+
+    void back(){
+        lu_cor = 64 + ((imu.ax() * 64) + (imu.ay() * 64)) + 25;
+        ru_cor = 64 + ((imu.ax() * 64) - (imu.ay() * 64)) + 25;
+        ld_cor = 64 - ((imu.ax() * 64) + (imu.ay() * 64)) - 30;
+        rd_cor = 64 - ((imu.ax() * 64) - (imu.ay() * 64)) - 30;
+        analogWrite(LU_Motor, lu_cor);
+        analogWrite(RU_Motor, ru_cor);
+        analogWrite(LD_Motor, ld_cor);
+        analogWrite(RD_Motor, rd_cor);
+    }
+
 };
 
 DroneComm droneComm;

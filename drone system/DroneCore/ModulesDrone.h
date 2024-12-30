@@ -61,7 +61,13 @@ public:
             } else if (command_2 == "check_z"){
               droneComm.check_accel_z();
             } else if (command_2 == "up"){
-              droneComm.up(params);
+              droneComm.check_up(params, "up");
+            } else if(command_2 == "idle"){
+              droneComm.check_up(params, "idle");
+            } else if(command_2 == "forward") {
+              droneComm.check_up(params, "forward");
+            } else if (command_2 == "back"){
+              droneComm.check_up(params, "back");
             }
             else {
               Serial.println("Error: command not found");
