@@ -165,10 +165,7 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Block Coding</h1>
-    </div>
-    
+
     <div class="container">
         <div class="toolbox" id="toolbox">
             <h3>Events</h3>
@@ -199,6 +196,24 @@
             </div>
             <div class="block command" draggable="true" data-type="command">
                 say <span class="block-socket"></span>
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                start
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                forward(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                back(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                landing
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                right(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                left(<span class="block-socket"></span>)
             </div>
         </div>
         
@@ -260,13 +275,28 @@
                     let x = e.clientX - workspace.offsetLeft - dragOffsetX;
                     let y = e.clientY - workspace.offsetTop - dragOffsetY;
             
-                    draggedBlock.style.position = 'absolute';
-                    draggedBlock.style.left = x + 'px';
-                    draggedBlock.style.top = y + 'px';
-                    workspace.appendChild(draggedBlock);
+                    // Clone the dragged block only if it's from the toolbox
+                    if (draggedBlock.parentNode === toolbox) {
+                        const clonedBlock = draggedBlock.cloneNode(true);
+                        clonedBlock.style.position = 'absolute';
+                        clonedBlock.style.left = x + 'px';
+                        clonedBlock.style.top = y + 'px';
+                        workspace.appendChild(clonedBlock);
+                        makeBlockDraggable(clonedBlock);
+                        draggedBlock = clonedBlock; // Use the cloned block for further processing
+                    } else {
+                        draggedBlock.style.position = 'absolute';
+                        draggedBlock.style.left = x + 'px';
+                        draggedBlock.style.top = y + 'px';
+                    }
             
-                    makeBlockDraggable(draggedBlock);
-                    updateGeneratedCode();
+                    // Check for nearby blocks and "magnetize"
+                    const nearbyBlock = findNearbyBlock(draggedBlock);
+                    if (nearbyBlock) {
+                        magnetizeBlocks(draggedBlock, nearbyBlock);
+                    }
+            
+                    generateCodeFromBlocks();
                 }
             });
             
@@ -283,11 +313,12 @@
             
                 block.addEventListener('dragend', function() {
                     draggedBlock = null;
+                    generateCodeFromBlocks();
                 });
             
                 block.addEventListener('dblclick', function() {
                     this.parentNode.removeChild(this);
-                    updateGeneratedCode();
+                    generateCodeFromBlocks();
                 });
             }
             
@@ -301,6 +332,8 @@
                 });
                 
                 codeOutput.innerHTML = `<pre>${code || 'Generated code will appear here...'}</pre>`;
+                
+                generateCodeFromBlocks();
             }
             
             // Convert block to code
@@ -341,6 +374,28 @@
                         const message = '"Hello!"'; // Default value
                         return `say(${message});`;
                     }
+                    else if (text.includes('start')) {
+                        return `start();`;
+                    }
+                    else if (text.includes('forward')) {
+                        const distance = '10'; // Default value
+                        return `forward(${distance});`;
+                    }
+                    else if (text.includes('back')) {
+                        const distance = '10'; // Default value
+                        return `back(${distance});`;
+                    }
+                    else if (text.includes('landing')) {
+                        return `landing();`;
+                    }
+                    else if (text.includes('right')) {
+                        const distance = '10'; // Default value
+                        return `right(${distance});`;
+                    }
+                    else if (text.includes('left')) {
+                        const distance = '10'; // Default value
+                        return `left(${distance});`;
+                    }
                 }
                 
                 return '// Unknown block: ' + text;
@@ -379,18 +434,14 @@
 
             function generateCodeFromBlocks() {
                 let code = "";
-                // Find the "start" block
-                const startBlock = workspace.querySelector('.block[data-type="event"]');
-                if (startBlock) {
-                    code += blockToCode(startBlock) + '\n';
-                    let nextBlock = startBlock.nextElementSibling;
-                    while (nextBlock) {
-                        code += blockToCode(nextBlock) + '\n';
-                        nextBlock = nextBlock.nextElementSibling;
-                    }
-                } else {
-                    code = "// No start block found!";
-                }
+                // Get all blocks in the workspace
+                const blocks = workspace.querySelectorAll('.block:not(.block-placeholder)');
+            
+                // Iterate through all blocks and generate code
+                blocks.forEach(block => {
+                    code += blockToCode(block) + '\n';
+                });
+            
                 codeOutput.innerHTML = `<pre>${code}</pre>`;
             }
         });
