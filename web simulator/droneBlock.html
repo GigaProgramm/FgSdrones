@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch-like Block Coding</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background-color: #4a6da7;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .toolbox {
+            width: 200px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .workspace {
+            flex: 1;
+            background-color: #e0e0e0;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .block {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: move;
+            font-size: 14px;
+            user-select: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .command {
+            background-color: #4a6da7;
+            color: white;
+        }
+        
+        .control {
+            background-color: #ffab19;
+            color: white;
+        }
+        
+        .event {
+            background-color: #ff6680;
+            color: white;
+        }
+        
+        .block-placeholder {
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Ensure it's behind the blocks */
+        }
+        
+        .block-socket {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        
+        .block-connector {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        
+        .code-output {
+            height: 150px;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        
+        .run-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .code-editor {
+            flex: 1;
+            background-color: #282c34;
+            color: #fff;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        
+        #code-textarea {
+            width: 100%;
+            height: 600px;
+            background-color: #282c34;
+            color: #fff;
+            border: none;
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        .block-connector-left {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to right, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        
+        .block-connector-right {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to left, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="toolbox" id="toolbox">
+            <h3>Events</h3>
+            <div class="block event" draggable="true" data-type="event">
+                when program starts
+            </div>
+            <div class="block event" draggable="true" data-type="event">
+                when <span class="block-socket"></span> clicked
+            </div>
+            
+            <h3>Control</h3>
+            <div class="block control" draggable="true" data-type="control">
+                repeat <span class="block-socket"></span> times
+                <div class="block-placeholder"></div>
+            </div>
+            <div class="block control" draggable="true" data-type="control">
+                if <span class="block-socket"></span> then
+                <div class="block-placeholder"></div>
+            </div>
+            
+            <h3>Commands</h3>
+            <div class="block command bottom" draggable="true" data-type="command">
+                <div class="block-connector-left"></div>
+                move <span class="block-socket"></span> steps
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                turn <span class="block-socket"></span> degrees
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                say <span class="block-socket"></span>
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                start
+            </div>
+            <div class="block command" draggable="true" data-type="command">
+                forward(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                back(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                landing
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                right(<span class="block-socket"></span>)
+            </div>
+             <div class="block command" draggable="true" data-type="command">
+                left(<span class="block-socket"></span>)
+            </div>
+        </div>
+        
+        <div class="workspace" id="workspace">
+            <div class="block-placeholder" id="main-placeholder" style="height: 100px;"></div>
+        </div>
+    </div>
+    
+    <div class="code-output" id="code-output">
+        <p>Generated code will appear here...</p>
+    </div>
+    
+    <button class="run-button" id="run-button">Run Code</button>
+    <button class="run-button" id="toggle-mode-button">Toggle Text Mode</button>
+
+    <div class="code-editor" id="code-editor" style="display: none;">
+        <textarea id="code-textarea"></textarea>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const workspace = document.getElementById('workspace');
+            const toolbox = document.getElementById('toolbox');
+            const codeOutput = document.getElementById('code-output');
+            const runButton = document.getElementById('run-button');
+            const toggleModeButton = document.getElementById('toggle-mode-button');
+            const codeEditor = document.getElementById('code-editor');
+            const codeTextarea = document.getElementById('code-textarea');
+            let isTextMode = false;
+            
+            let draggedBlock = null;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+            
+            // Make toolbox blocks draggable
+            const blocks = toolbox.querySelectorAll('.block');
+            blocks.forEach(block => {
+                block.addEventListener('dragstart', function(e) {
+                    draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
+                    e.dataTransfer.setData('text/plain', this.outerHTML);
+                });
+                
+                block.addEventListener('dragend', function() {
+                    draggedBlock = null;
+                });
+            });
+            
+            // Workspace drop zone
+            workspace.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            workspace.addEventListener('drop', function(e) {
+                e.preventDefault();
+            
+                if (draggedBlock) {
+                    let x = e.clientX - workspace.offsetLeft - dragOffsetX;
+                    let y = e.clientY - workspace.offsetTop - dragOffsetY;
+            
+                    // Clone the dragged block only if it's from the toolbox
+                    if (draggedBlock.parentNode === toolbox) {
+                        const clonedBlock = draggedBlock.cloneNode(true);
+                        clonedBlock.style.position = 'absolute';
+                        clonedBlock.style.left = x + 'px';
+                        clonedBlock.style.top = y + 'px';
+                        workspace.appendChild(clonedBlock);
+                        makeBlockDraggable(clonedBlock);
+                        draggedBlock = clonedBlock; // Use the cloned block for further processing
+                    } else {
+                        draggedBlock.style.position = 'absolute';
+                        draggedBlock.style.left = x + 'px';
+                        draggedBlock.style.top = y + 'px';
+                    }
+            
+                    // Check for nearby blocks and "magnetize"
+                    const nearbyBlock = findNearbyBlock(draggedBlock);
+                    if (nearbyBlock) {
+                        magnetizeBlocks(draggedBlock, nearbyBlock);
+                    }
+            
+                    generateCodeFromBlocks();
+                }
+            });
+            
+            // Make blocks in workspace draggable
+            function makeBlockDraggable(block) {
+                block.setAttribute('draggable', 'true');
+            
+                block.addEventListener('dragstart', function(e) {
+                    draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
+                    e.dataTransfer.setData('text/plain', this.outerHTML);
+                });
+            
+                block.addEventListener('dragend', function() {
+                    draggedBlock = null;
+                    generateCodeFromBlocks();
+                });
+            
+                block.addEventListener('dblclick', function() {
+                    this.parentNode.removeChild(this);
+                    generateCodeFromBlocks();
+                });
+            }
+            
+            // Generate code from blocks
+            function updateGeneratedCode() {
+                let code = '';
+                const mainBlocks = workspace.querySelectorAll('.block:not(.block-placeholder)');
+                
+                mainBlocks.forEach(block => {
+                    code += blockToCode(block) + '\n';
+                });
+                
+                codeOutput.innerHTML = `<pre>${code || 'Generated code will appear here...'}</pre>`;
+                
+                generateCodeFromBlocks();
+            }
+            
+            // Convert block to code
+            function blockToCode(block) {
+                const type = block.getAttribute('data-type');
+                const text = block.textContent.trim();
+                
+                if (type === 'event') {
+                    return '// Event: ' + text.replace('starts', 'program start event');
+                }
+                else if (type === 'event') {
+                    return '// Event: ' + text.replace('clicked', 'clicked event');
+                }
+                else if (type === 'control') {
+                    if (text.includes('repeat')) {
+                        const times = '10'; // Default value
+                        const innerBlock = block.querySelector('.block-placeholder').nextElementSibling;
+                        let innerCode = innerBlock ? blockToCode(innerBlock) : '// No block inside';
+                        return `for (let i = 0; i < ${times}; i++) {\n  ${innerCode}\n}`;
+                    }
+                    else if (text.includes('if')) {
+                        const condition = 'true'; // Default value
+                        const innerBlock = block.querySelector('.block-placeholder').nextElementSibling;
+                        let innerCode = innerBlock ? blockToCode(innerBlock) : '// No block inside';
+                        return `if (${condition}) {\n  ${innerCode}\n}`;
+                    }
+                }
+                else if (type === 'command') {
+                    if (text.includes('move')) {
+                        const steps = '10'; // Default value
+                        return `move(${steps});`;
+                    }
+                    else if (text.includes('turn')) {
+                        const degrees = '90'; // Default value
+                        return `turn(${degrees});`;
+                    }
+                    else if (text.includes('say')) {
+                        const message = '"Hello!"'; // Default value
+                        return `say(${message});`;
+                    }
+                    else if (text.includes('start')) {
+                        return `start();`;
+                    }
+                    else if (text.includes('forward')) {
+                        const distance = '10'; // Default value
+                        return `forward(${distance});`;
+                    }
+                    else if (text.includes('back')) {
+                        const distance = '10'; // Default value
+                        return `back(${distance});`;
+                    }
+                    else if (text.includes('landing')) {
+                        return `landing();`;
+                    }
+                    else if (text.includes('right')) {
+                        const distance = '10'; // Default value
+                        return `right(${distance});`;
+                    }
+                    else if (text.includes('left')) {
+                        const distance = '10'; // Default value
+                        return `left(${distance});`;
+                    }
+                }
+                
+                return '// Unknown block: ' + text;
+            }
+            
+            // Run button click handler
+            runButton.addEventListener('click', function() {
+                updateGeneratedCode();
+                alert('Code execution simulated. Check the output panel for generated code.');
+            });
+
+            toggleModeButton.addEventListener('click', function() {
+                isTextMode = !isTextMode;
+
+                if (isTextMode) {
+                    // Switch to text mode
+                    workspace.style.display = 'none';
+                    codeEditor.style.display = 'flex';
+                    toggleModeButton.textContent = 'Switch to Block Mode';
+                    updateGeneratedCode(); // Generate code and put it in the editor
+                    codeTextarea.value = codeOutput.textContent;
+                } else {
+                    // Switch to block mode
+                    workspace.style.display = 'flex';
+                    codeEditor.style.display = 'none';
+                    toggleModeButton.textContent = 'Switch to Text Mode';
+
+                    //Clear the workspace
+                    workspace.innerHTML = '';
+                }
+            });
+
+            const toggleCodeButton = document.getElementById('toggle-code-button');
+            const codeEditorPanel = document.getElementById('code-editor-panel');
+            let isCodeVisible = false;
+
+            function generateCodeFromBlocks() {
+                let code = "";
+                // Get all blocks in the workspace
+                const blocks = workspace.querySelectorAll('.block:not(.block-placeholder)');
+            
+                // Iterate through all blocks and generate code
+                blocks.forEach(block => {
+                    code += blockToCode(block) + '\n';
+                });
+            
+                codeOutput.innerHTML = `<pre>${code}</pre>`;
+            }
+        });
+    </script>
+</body>
+</html>
