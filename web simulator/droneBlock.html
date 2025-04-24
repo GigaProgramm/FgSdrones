@@ -32,6 +32,8 @@
             background-color: #f0f0f0;
             padding: 10px;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
         
         .workspace {
@@ -48,6 +50,9 @@
             cursor: move;
             font-size: 14px;
             user-select: none;
+            position: relative;
+            display: flex;
+            align-items: center;
         }
         
         .command {
@@ -114,6 +119,49 @@
             cursor: pointer;
             border-radius: 4px;
         }
+        
+        .code-editor {
+            flex: 1;
+            background-color: #282c34;
+            color: #fff;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+        
+        #code-textarea {
+            width: 100%;
+            height: 600px;
+            background-color: #282c34;
+            color: #fff;
+            border: none;
+            resize: none;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 10px;
+        }
+        
+        .block-connector-left {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to right, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        
+        .block-connector-right {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to left, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
     </style>
 </head>
 <body>
@@ -124,6 +172,9 @@
     <div class="container">
         <div class="toolbox" id="toolbox">
             <h3>Events</h3>
+            <div class="block event" draggable="true" data-type="event">
+                when program starts
+            </div>
             <div class="block event" draggable="true" data-type="event">
                 when <span class="block-socket"></span> clicked
             </div>
@@ -139,7 +190,8 @@
             </div>
             
             <h3>Commands</h3>
-            <div class="block command" draggable="true" data-type="command">
+            <div class="block command bottom" draggable="true" data-type="command">
+                <div class="block-connector-left"></div>
                 move <span class="block-socket"></span> steps
             </div>
             <div class="block command" draggable="true" data-type="command">
@@ -160,6 +212,11 @@
     </div>
     
     <button class="run-button" id="run-button">Run Code</button>
+    <button class="run-button" id="toggle-mode-button">Toggle Text Mode</button>
+
+    <div class="code-editor" id="code-editor" style="display: none;">
+        <textarea id="code-textarea"></textarea>
+    </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -167,102 +224,70 @@
             const toolbox = document.getElementById('toolbox');
             const codeOutput = document.getElementById('code-output');
             const runButton = document.getElementById('run-button');
+            const toggleModeButton = document.getElementById('toggle-mode-button');
+            const codeEditor = document.getElementById('code-editor');
+            const codeTextarea = document.getElementById('code-textarea');
+            let isTextMode = false;
             
             let draggedBlock = null;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
             
             // Make toolbox blocks draggable
             const blocks = toolbox.querySelectorAll('.block');
             blocks.forEach(block => {
                 block.addEventListener('dragstart', function(e) {
-                    draggedBlock = this.cloneNode(true);
+                    draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
                     e.dataTransfer.setData('text/plain', this.outerHTML);
-                    setTimeout(() => this.style.display = 'none', 0);
                 });
                 
                 block.addEventListener('dragend', function() {
-                    this.style.display = 'block';
                     draggedBlock = null;
                 });
             });
             
-            // Workspace drop zones
-            const placeholders = document.querySelectorAll('.block-placeholder');
-            placeholders.forEach(placeholder => {
-                placeholder.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.style.backgroundColor = '#ccc';
-                });
-                
-                placeholder.addEventListener('dragleave', function() {
-                    this.style.backgroundColor = '';
-                });
-                
-                placeholder.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.style.backgroundColor = '';
-                    
-                    if (draggedBlock) {
-                        // Remove from toolbox if it's a direct clone
-                        if (draggedBlock.parentNode === toolbox) {
-                            toolbox.removeChild(draggedBlock);
-                        }
-                        
-                        // Add to workspace
-                        this.parentNode.insertBefore(draggedBlock, this);
-                        
-                        // Make the new block draggable
-                        makeBlockDraggable(draggedBlock);
-                        
-                        // Update code
-                        updateGeneratedCode();
-                    }
-                });
+            // Workspace drop zone
+            workspace.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            workspace.addEventListener('drop', function(e) {
+                e.preventDefault();
+            
+                if (draggedBlock) {
+                    let x = e.clientX - workspace.offsetLeft - dragOffsetX;
+                    let y = e.clientY - workspace.offsetTop - dragOffsetY;
+            
+                    draggedBlock.style.position = 'absolute';
+                    draggedBlock.style.left = x + 'px';
+                    draggedBlock.style.top = y + 'px';
+                    workspace.appendChild(draggedBlock);
+            
+                    makeBlockDraggable(draggedBlock);
+                    updateGeneratedCode();
+                }
             });
             
             // Make blocks in workspace draggable
             function makeBlockDraggable(block) {
                 block.setAttribute('draggable', 'true');
-                
+            
                 block.addEventListener('dragstart', function(e) {
                     draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
                     e.dataTransfer.setData('text/plain', this.outerHTML);
-                    setTimeout(() => this.style.opacity = '0.4', 0);
                 });
-                
+            
                 block.addEventListener('dragend', function() {
-                    this.style.opacity = '1';
                     draggedBlock = null;
                 });
-                
-                // Allow dropping other blocks into placeholders within this block
-                const innerPlaceholders = block.querySelectorAll('.block-placeholder');
-                innerPlaceholders.forEach(placeholder => {
-                    placeholder.addEventListener('dragover', function(e) {
-                        e.preventDefault();
-                        this.style.backgroundColor = '#ccc';
-                    });
-                    
-                    placeholder.addEventListener('dragleave', function() {
-                        this.style.backgroundColor = '';
-                    });
-                    
-                    placeholder.addEventListener('drop', function(e) {
-                        e.preventDefault();
-                        this.style.backgroundColor = '';
-                        
-                        if (draggedBlock && draggedBlock !== block) {
-                            // Remove from previous position
-                            if (draggedBlock.parentNode) {
-                                draggedBlock.parentNode.removeChild(draggedBlock);
-                            }
-                            
-                            // Add to new position
-                            this.parentNode.insertBefore(draggedBlock, this);
-                            
-                            // Update code
-                            updateGeneratedCode();
-                        }
-                    });
+            
+                block.addEventListener('dblclick', function() {
+                    this.parentNode.removeChild(this);
+                    updateGeneratedCode();
                 });
             }
             
@@ -284,6 +309,9 @@
                 const text = block.textContent.trim();
                 
                 if (type === 'event') {
+                    return '// Event: ' + text.replace('starts', 'program start event');
+                }
+                else if (type === 'event') {
                     return '// Event: ' + text.replace('clicked', 'clicked event');
                 }
                 else if (type === 'control') {
@@ -323,6 +351,48 @@
                 updateGeneratedCode();
                 alert('Code execution simulated. Check the output panel for generated code.');
             });
+
+            toggleModeButton.addEventListener('click', function() {
+                isTextMode = !isTextMode;
+
+                if (isTextMode) {
+                    // Switch to text mode
+                    workspace.style.display = 'none';
+                    codeEditor.style.display = 'flex';
+                    toggleModeButton.textContent = 'Switch to Block Mode';
+                    updateGeneratedCode(); // Generate code and put it in the editor
+                    codeTextarea.value = codeOutput.textContent;
+                } else {
+                    // Switch to block mode
+                    workspace.style.display = 'flex';
+                    codeEditor.style.display = 'none';
+                    toggleModeButton.textContent = 'Switch to Text Mode';
+
+                    //Clear the workspace
+                    workspace.innerHTML = '';
+                }
+            });
+
+            const toggleCodeButton = document.getElementById('toggle-code-button');
+            const codeEditorPanel = document.getElementById('code-editor-panel');
+            let isCodeVisible = false;
+
+            function generateCodeFromBlocks() {
+                let code = "";
+                // Find the "start" block
+                const startBlock = workspace.querySelector('.block[data-type="event"]');
+                if (startBlock) {
+                    code += blockToCode(startBlock) + '\n';
+                    let nextBlock = startBlock.nextElementSibling;
+                    while (nextBlock) {
+                        code += blockToCode(nextBlock) + '\n';
+                        nextBlock = nextBlock.nextElementSibling;
+                    }
+                } else {
+                    code = "// No start block found!";
+                }
+                codeOutput.innerHTML = `<pre>${code}</pre>`;
+            }
         });
     </script>
 </body>
