@@ -70,6 +70,16 @@
             color: white;
         }
         
+        .movement {
+            background-color: #29ABE2; /* Light blue */
+            color: white;
+        }
+        
+        .pin {
+            background-color: #8E44AD; /* Purple */
+            color: white;
+        }
+        
         .block-placeholder {
             border: 2px dashed #aaa;
             border-radius: 4px;
@@ -176,48 +186,46 @@
             <div class="block event" draggable="true" data-type="event">
                 when program starts
             </div>
-            <div class="block event" draggable="true" data-type="event">
-                when <span class="block-socket"></span> clicked
-            </div>
+        
             
-            <h3>Control</h3>
-            <div class="block control" draggable="true" data-type="control">
-                repeat <span class="block-socket"></span> times
-                <div class="block-placeholder"></div>
-            </div>
-            <div class="block control" draggable="true" data-type="control">
-                if <span class="block-socket"></span> then
-                <div class="block-placeholder"></div>
-            </div>
-            
-            <h3>Commands</h3>
-            <div class="block command bottom" draggable="true" data-type="command">
-                <div class="block-connector-left"></div>
-                move <span class="block-socket"></span> steps
-            </div>
-            <div class="block command" draggable="true" data-type="command">
-                turn <span class="block-socket"></span> degrees
-            </div>
-            <div class="block command" draggable="true" data-type="command">
-                say <span class="block-socket"></span>
-            </div>
-            <div class="block command" draggable="true" data-type="command">
+            <h3>Movement Commands</h3>
+            <div class="block movement" draggable="true" data-type="command">
                 start
             </div>
-            <div class="block command" draggable="true" data-type="command">
+            <div class="block movement" draggable="true" data-type="command">
                 forward(<span class="block-socket"></span>)
             </div>
-             <div class="block command" draggable="true" data-type="command">
+            <div class="block movement" draggable="true" data-type="command">
                 back(<span class="block-socket"></span>)
             </div>
-             <div class="block command" draggable="true" data-type="command">
+            <div class="block movement" draggable="true" data-type="command">
                 landing
             </div>
-             <div class="block command" draggable="true" data-type="command">
+            <div class="block movement" draggable="true" data-type="command">
                 right(<span class="block-socket"></span>)
             </div>
-             <div class="block command" draggable="true" data-type="command">
+            <div class="block movement" draggable="true" data-type="command">
                 left(<span class="block-socket"></span>)
+            </div>
+            <div class="block movement" draggable="true" data-type="command">
+                up()
+            </div>
+            <div class="block movement" draggable="true" data-type="command">
+                down()
+            </div>
+            <div class="block movement" draggable="true" data-type="command">
+                rotate()
+            </div>
+            
+            <h3>Pin Commands</h3>
+            <div class="block pin" draggable="true" data-type="command">
+                pin.init()
+            </div>
+            <div class="block pin" draggable="true" data-type="command">
+                pin.read()
+            </div>
+            <div class="block pin" draggable="true" data-type="command">
+                pin.write()
             </div>
         </div>
         
@@ -351,20 +359,7 @@
                 else if (type === 'event') {
                     return '// Event: ' + text.replace('clicked', 'clicked event');
                 }
-                else if (type === 'control') {
-                    if (text.includes('repeat')) {
-                        const times = '10'; // Default value
-                        const innerBlock = block.querySelector('.block-placeholder').nextElementSibling;
-                        let innerCode = innerBlock ? blockToCode(innerBlock) : '// No block inside';
-                        return `for (let i = 0; i < ${times}; i++) {\n  ${innerCode}\n}`;
-                    }
-                    else if (text.includes('if')) {
-                        const condition = 'true'; // Default value
-                        const innerBlock = block.querySelector('.block-placeholder').nextElementSibling;
-                        let innerCode = innerBlock ? blockToCode(innerBlock) : '// No block inside';
-                        return `if (${condition}) {\n  ${innerCode}\n}`;
-                    }
-                }
+                
                 else if (type === 'command') {
                     if (text.includes('move')) {
                         const steps = '10'; // Default value
@@ -374,12 +369,9 @@
                         const degrees = '90'; // Default value
                         return `turn(${degrees});`;
                     }
-                    else if (text.includes('say')) {
-                        const message = '"Hello!"'; // Default value
-                        return `say(${message});`;
-                    }
+                  
                     else if (text.includes('start')) {
-                        return `start();`;
+                        return `drone.init();`;
                     }
                     else if (text.includes('forward')) {
                         const distance = '10'; // Default value
@@ -399,6 +391,24 @@
                     else if (text.includes('left')) {
                         const distance = '10'; // Default value
                         return `left(${distance});`;
+                    }
+                    else if (text.includes('up')) {
+                        return `up();`;
+                    }
+                    else if (text.includes('down')) {
+                        return `down();`;
+                    }
+                    else if (text.includes('rotate')) {
+                        return `rotate();`;
+                    }
+                    else if (text.includes('pin.init')) {
+                        return `pin.init();`;
+                    }
+                    else if (text.includes('pin.read')) {
+                        return `pin.read();`;
+                    }
+                    else if (text.includes('pin.write')) {
+                        return `pin.write();`;
                     }
                 }
                 
