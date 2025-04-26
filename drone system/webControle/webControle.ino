@@ -1,5 +1,5 @@
 #include "GyverPortal.h"
-GuverPortal ui;
+GyverPortal ui;
 
 void build(){
   GP.BUILD_BEGIN(GP_DARK);
