@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FgSDRONES | Downloads</title>
+    <title>FgSDRONES | Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -151,33 +151,28 @@
         .main-content {
             margin-top: 80px;
             padding: 2rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .download-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 1200px;
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
             background-color: var(--primary-dark);
             border-radius: 12px;
             padding: 2rem;
             box-shadow: 0 8px 24px rgba(0,0,0,0.1);
         }
         
-        .image-section {
+        .media-section {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            margin-bottom: 2rem;
         }
         
         .image-preview {
-            width: 300px;
+            width: 100%;
             height: 300px;
             object-fit: contain;
             background-color: var(--dark);
@@ -187,7 +182,9 @@
         
         .image-switcher {
             display: flex;
+            justify-content: center;
             gap: 0.5rem;
+            margin-bottom: 1.5rem;
         }
         
         .image-switcher button {
@@ -207,14 +204,29 @@
             color: white;
         }
         
+        .sketchfab-embed {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: none;
+        }
+        
         .info-section {
-            max-width: 500px;
+            display: flex;
+            flex-direction: column;
         }
         
         .section-title {
             font-size: 1.8rem;
             margin-bottom: 1rem;
             color: var(--accent);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
         }
         
         .download-stats {
@@ -231,7 +243,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            width: 100%;
+            margin-bottom: 2rem;
         }
         
         .download-button {
@@ -258,6 +270,18 @@
             margin-right: 0.8rem;
         }
         
+        .sketchfab-credit {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
+        .sketchfab-credit a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
         .footer {
             background: linear-gradient(135deg, var(--secondary), var(--primary-dark));
             color: white;
@@ -272,13 +296,8 @@
         }
         
         @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
-            
-            .image-preview {
-                width: 250px;
-                height: 250px;
+            .game-container {
+                grid-template-columns: 1fr;
             }
             
             .download-buttons {
@@ -316,32 +335,35 @@
     </div>
 
     <main class="main-content">
-        <div class="download-container">
-            <div class="image-section">
-                <img src="./code.png" alt="FgSDRONES screenshot" class="image-preview" id="main-image">
+        <div class="game-container">
+            <div class="media-section">
+                <img src="1.png" alt="FgSDRONES game screenshot" class="image-preview" id="main-image">
                 <div class="image-switcher">
-                    <button onclick="switchImage('./code.png')">1</button>
-                    <button onclick="switchImage('./code.png')">2</button>
-                    <button onclick="switchImage('./code.png')">3</button>
+                    <button onclick="switchImage('1.png')">1</button>
+                    <button onclick="switchImage('2.png')">2</button>
+                    <button onclick="switchImage('3.png')">3</button>
                 </div>
+                
+                <iframe class="sketchfab-embed" title="sci-fi bear" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/a20ef759574d47689016667c1188af0a/embed"></iframe>
+                <p class="sketchfab-credit">
+                    <a href="https://sketchfab.com/3d-models/sci-fi-bear-a20ef759574d47689016667c1188af0a?utm_medium=embed&utm_campaign=share-popup&utm_content=a20ef759574d47689016667c1188af0a" target="_blank" rel="nofollow">sci-fi bear</a> by <a href="https://sketchfab.com/fgsd?utm_medium=embed&utm_campaign=share-popup&utm_content=a20ef759574d47689016667c1188af0a" target="_blank" rel="nofollow">fgsd</a> on <a href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=a20ef759574d47689016667c1188af0a" target="_blank" rel="nofollow">Sketchfab</a>
+                </p>
             </div>
             
             <div class="info-section">
-                <h2 class="section-title" data-i18n="download.title">Download FgSDRONES</h2>
-                <p class="download-stats" data-i18n="download.stats">Downloaded <span class="download-count" id="download-count">0</span> times</p>
+                <h2 class="section-title" data-i18n="game.title">FgSDRONES Game</h2>
+                <p class="description" data-i18n="game.description">This is an open-world game where you need to program drones and survive.</p>
+                
+                <div class="download-stats" data-i18n="game.downloads">Downloads: <span class="download-count" id="download-count">0</span></div>
                 
                 <div class="download-buttons">
-                    <a href="https://github.com/ArduRadioKot/FgSdrones/releases" class="download-button" onclick="incrementDownloadCount()">
+                    <a href="https://github.com/yourusername/yourrepository/raw/main/yourfile-windows.zip" class="download-button" onclick="incrementDownloadCount()">
                         <i class="fab fa-windows"></i>
                         <span data-i18n="download.windows">Windows</span>
                     </a>
-                    <a href="https://github.com/ArduRadioKot/FgSdrones/releases" class="download-button" onclick="incrementDownloadCount()">
+                    <a href="https://github.com/yourusername/yourrepository/raw/main/yourfile-mac.zip" class="download-button" onclick="incrementDownloadCount()">
                         <i class="fab fa-apple"></i>
                         <span data-i18n="download.mac">Mac OS</span>
-                    </a>
-                    <a href="https://github.com/ArduRadioKot/FgSdrones/releases" class="download-button" onclick="incrementDownloadCount()">
-                        <i class="fab fa-linux"></i>
-                        <span data-i18n="download.linux">Linux</span>
                     </a>
                 </div>
             </div>
@@ -367,11 +389,11 @@
                     "sidebar.unityGame": "Unity Game",
                     "sidebar.ide": "Drone IDE",
                     "language.toggle": "Switch to Russian",
-                    "download.title": "Download FgSDRONES",
-                    "download.stats": "Downloaded",
+                    "game.title": "FgSDRONES Game",
+                    "game.description": "This is an open-world game where you need to program drones and survive.",
+                    "game.downloads": "Downloads:",
                     "download.windows": "Windows",
                     "download.mac": "Mac OS",
-                    "download.linux": "Linux",
                     "footer.copyright": "© 2024 FgSDRONES. All rights reserved."
                 },
                 ru: {
@@ -381,11 +403,11 @@
                     "sidebar.unityGame": "Игра на Unity",
                     "sidebar.ide": "Редактор кода",
                     "language.toggle": "Переключить на Английский",
-                    "download.title": "Скачать FgSDRONES",
-                    "download.stats": "Скачано",
+                    "game.title": "Игра FgSDRONES",
+                    "game.description": "Это игра с открытым миром, где нужно программировать дроны и выживать.",
+                    "game.downloads": "Скачиваний:",
                     "download.windows": "Windows",
                     "download.mac": "Mac OS",
-                    "download.linux": "Linux",
                     "footer.copyright": "© 2024 FgSDRONES. Все права защищены."
                 }
             },
@@ -416,7 +438,6 @@
             applyLanguage(lang) {
                 const translations = this.translations[lang];
                 
-                // Update all elements with data-i18n attribute
                 document.querySelectorAll('[data-i18n]').forEach(element => {
                     const key = element.getAttribute('data-i18n');
                     if (translations[key]) {
@@ -434,16 +455,13 @@
             },
 
             setupEventListeners() {
-                // Sidebar controls
                 document.querySelector('.menu-icon').addEventListener('click', this.openNav);
                 document.querySelector('.closebtn').addEventListener('click', this.closeNav);
                 
-                // Language toggle
                 document.querySelector('.language-toggle').addEventListener('click', () => {
                     LanguageManager.toggleLanguage();
                 });
                 
-                // Close sidebar when clicking outside
                 document.addEventListener('click', (event) => {
                     const sidebar = document.getElementById('mySidebar');
                     const menuIcon = document.querySelector('.menu-icon');
@@ -481,7 +499,7 @@
             document.getElementById('main-image').src = src;
         }
 
-        // Initialize all functionality when DOM is loaded
+        // Initialize all functionality
         document.addEventListener('DOMContentLoaded', () => {
             LanguageManager.init();
             UIControls.init();

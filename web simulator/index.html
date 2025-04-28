@@ -186,6 +186,139 @@
         .mobile-content .test-button {
             margin-top: 10px;
         }
+        
+        /* Block editor styles */
+        .block-editor {
+            display: none;
+            width: 100%;
+            height: 80%;
+            flex-direction: column;
+            background-color: #333; /* Dark background */
+            border-radius: 0 0 10px 10px;
+            position: relative;
+        }
+        .block-editor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background-color: #555; /* Darker toolbar */
+            border-radius: 5px 5px 0 0;
+        }
+        .block-editor::after {
+            content: 'Block Editor';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            color: #ecf0f1;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .block-toolbox {
+            width: 200px;
+            background-color: #444; /* Dark background */
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            color: #eee; /* Light text color */
+        }
+        .block-workspace {
+            flex: 1;
+            background-color: #555; /* Dark background */
+            position: relative;
+            overflow: auto;
+            height: 100%;
+        }
+        .block-container {
+            display: flex;
+            height: calc(100% - 30px);
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .block {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: move;
+            font-size: 14px;
+            user-select: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .command {
+            background-color: #4a6da7;
+            color: white;
+        }
+        .control {
+            background-color: #ffab19;
+            color: white;
+        }
+        .event {
+            background-color: #ff6680;
+            color: white;
+        }
+        .movement {
+            background-color: #29ABE2;
+            color: white;
+        }
+        .pin {
+            background-color: #8E44AD;
+            color: white;
+        }
+        .block-placeholder {
+            border: 2px dashed #aaa;
+            border-radius: 4px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .block-socket {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        .block-connector {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin: 0 5px;
+        }
+        .block-connector-left {
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to right, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+        }
+        .block-connector-right {
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(to left, transparent 50%, #4a6da7 50%);
+            clip-path: polygon(100% 0, 0 50%, 100% 100%);
+        }
+        
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -275,6 +408,35 @@ landing();
     <div>
     </div>
     <div>
+<<<<<<< Updated upstream
+=======
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+    </div>
+    <div>
+>>>>>>> Stashed changes
      <img alt="Robot image with four wheels and a green center" class="robot" height="50" id="mobile-robot" src="./images/free-icon-drone-4056808.png" width="50"/>
     </div>
    </div>
@@ -285,6 +447,8 @@ landing();
   <div class="container">
    <div class="left-panel">
     <div class="grid">
+     <div>
+     </div>
      <div>
      </div>
      <div>
@@ -355,8 +519,12 @@ landing();
         <div class="button" onclick="goToAnotherPage()">
             <i class="fas fa-external-link-alt"></i>
         </div>
+        <div class="button" onclick="toggleEditorMode()">
+            <i class="fas fa-puzzle-piece"></i>
+        </div>
     </div>
-    <div class="code-editor">
+    
+    <div class="code-editor" id="text-editor">
      <textarea class="code-editor-content" id="code">
 start();
 forward(1);
@@ -364,6 +532,62 @@ back(1);
 landing();
      </textarea>
     </div>
+    
+    <div class="block-editor" id="block-editor">
+        <div class="block-container">
+            <div class="block-toolbox" id="block-toolbox">
+                <h3>Events</h3>
+                <div class="block event" draggable="true" data-type="event">
+                    when program starts
+                </div>
+                
+                <h3>Movement Commands</h3>
+                <div class="block movement" draggable="true" data-type="command">
+                    start
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    forward(<span class="block-socket"></span>)
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    back(<span class="block-socket"></span>)
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    landing
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    right(<span class="block-socket"></span>)
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    left(<span class="block-socket"></span>)
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    up()
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    down()
+                </div>
+                <div class="block movement" draggable="true" data-type="command">
+                    rotate()
+                </div>
+                
+                <h3>Pin Commands</h3>
+                <div class="block pin" draggable="true" data-type="command">
+                    pin.init()
+                </div>
+                <div class="block pin" draggable="true" data-type="command">
+                    pin.read()
+                </div>
+                <div class="block pin" draggable="true" data-type="command">
+                    pin.write()
+                </div>
+            </div>
+            
+            <div class="block-workspace" id="block-workspace">
+                <div class="block-placeholder" id="main-placeholder" style="height: 100px;"></div>
+            </div>
+        </div>
+    </div>
+    
     <button class="test-button" onclick="runCode()">
      Test
     </button>
@@ -412,7 +636,16 @@ landing();
         }
 
         async function runCode() {
-            var code = editor.getValue();
+            position = { x: 0, y: 0 }; // Reset position at the start
+            robot.style.transform = `translate(${position.x}px, ${position.y}px)`; // Apply initial transform
+
+            var code = "";
+            if (document.getElementById("block-editor").style.display === "flex") {
+                code = generateCodeFromBlocks();
+            } else {
+                code = editor.getValue();
+            }
+            
             var commands = code.split('\n');
             for (var command of commands) {
                 if (command.startsWith('forward(')) {
@@ -429,6 +662,20 @@ landing();
                         robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
                         await sleep(500);
                     }
+                } else if (command.startsWith('right(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        position.x += gridSize;
+                        robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
+                        await sleep(500);
+                    }
+                } else if (command.startsWith('left(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        position.x -= gridSize;
+                        robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
+                        await sleep(500);
+                    }
                 } else if (command.startsWith('start(')) {
                     position = { x: 0, y: 0 };
                     robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
@@ -440,6 +687,9 @@ landing();
         }
 
         async function runMobileCode() {
+            mobilePosition = { x: 0, y: 0 }; // Reset mobile position at the start
+            mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`; // Apply initial transform
+
             var code = mobileEditor.getValue();
             var commands = code.split('\n');
             for (var command of commands) {
@@ -457,6 +707,20 @@ landing();
                         mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
                         await sleep(500);
                     }
+                } else if (command.startsWith('right(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        mobilePosition.x += gridSize;
+                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
+                        await sleep(500);
+                    }
+                } else if (command.startsWith('left(')) {
+                    var steps = parseInt(command.match(/\d+/)[0]);
+                    for (var i = 0; i < steps; i++) {
+                        mobilePosition.x -= gridSize;
+                        mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
+                        await sleep(500);
+                    }
                 } else if (command.startsWith('start(')) {
                     mobilePosition = { x: 0, y: 0 };
                     mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
@@ -468,7 +732,12 @@ landing();
         }
 
         function saveCode() {
-            var code = editor.getValue();
+            var code = "";
+            if (document.getElementById("block-editor").style.display === "flex") {
+                code = generateCodeFromBlocks();
+            } else {
+                code = editor.getValue();
+            }
             localStorage.setItem('savedCode', code);
             alert('Code saved!');
         }
@@ -510,16 +779,204 @@ landing();
             document.querySelector('.grid').style.display = 'grid';
         }
 
+        function toggleEditorMode() {
+            const textEditor = document.getElementById("text-editor");
+            const blockEditor = document.getElementById("block-editor");
+            
+            if (textEditor.style.display === "none") {
+                textEditor.style.display = "block";
+                blockEditor.style.display = "none";
+            } else {
+                textEditor.style.display = "none";
+                blockEditor.style.display = "flex";
+            }
+        }
+
+        // Block editor functionality
+        function initializeBlockEditor() {
+            const workspace = document.getElementById("block-workspace");
+            const toolbox = document.getElementById("block-toolbox");
+            
+            let draggedBlock = null;
+            let dragOffsetX = 0;
+            let dragOffsetY = 0;
+            
+            // Make toolbox blocks draggable
+            const blocks = toolbox.querySelectorAll('.block');
+            blocks.forEach(block => {
+                block.addEventListener('dragstart', function(e) {
+                    draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
+                    e.dataTransfer.setData('text/plain', this.outerHTML);
+                });
+                
+                block.addEventListener('dragend', function() {
+                    draggedBlock = null;
+                });
+            });
+            
+            // Workspace drop zone
+            workspace.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            workspace.addEventListener('drop', function(e) {
+                e.preventDefault();
+            
+                if (draggedBlock) {
+                    let x = e.clientX - workspace.offsetLeft - dragOffsetX;
+                    let y = e.clientY - workspace.offsetTop - dragOffsetY;
+            
+                    // Clone the dragged block only if it's from the toolbox
+                    if (draggedBlock.parentNode === toolbox) {
+                        const clonedBlock = draggedBlock.cloneNode(true);
+                        clonedBlock.style.position = 'absolute';
+                        clonedBlock.style.left = x + 'px';
+                        clonedBlock.style.top = y + 'px';
+                        workspace.appendChild(clonedBlock);
+                        makeBlockDraggable(clonedBlock);
+                        draggedBlock = clonedBlock; // Use the cloned block for further processing
+                    } else {
+                        draggedBlock.style.position = 'absolute';
+                        draggedBlock.style.left = x + 'px';
+                        draggedBlock.style.top = y + 'px';
+                    }
+            
+                    // Check for nearby blocks and "magnetize"
+                    const nearbyBlock = findNearbyBlock(draggedBlock);
+                    if (nearbyBlock) {
+                        magnetizeBlocks(draggedBlock, nearbyBlock);
+                    }
+                }
+            });
+            
+            // Make blocks in workspace draggable
+            function makeBlockDraggable(block) {
+                block.setAttribute('draggable', 'true');
+            
+                block.addEventListener('dragstart', function(e) {
+                    draggedBlock = this;
+                    dragOffsetX = e.clientX - this.getBoundingClientRect().left;
+                    dragOffsetY = e.clientY - this.getBoundingClientRect().top;
+                    e.dataTransfer.setData('text/plain', this.outerHTML);
+                });
+            
+                block.addEventListener('dragend', function() {
+                    draggedBlock = null;
+                });
+            
+                block.addEventListener('dblclick', function() {
+                    this.parentNode.removeChild(this);
+                });
+            }
+            
+            function findNearbyBlock(block) {
+                const blocks = workspace.querySelectorAll('.block:not(.block-placeholder)');
+                const blockRect = block.getBoundingClientRect();
+                
+                for (let otherBlock of blocks) {
+                    if (otherBlock === block) continue;
+                    
+                    const otherRect = otherBlock.getBoundingClientRect();
+                    const distance = Math.sqrt(
+                        Math.pow(blockRect.left - otherRect.left, 2) + 
+                        Math.pow(blockRect.top - otherRect.top, 2)
+                    );
+                    
+                    if (distance < 50) { // Threshold for "nearby"
+                        return otherBlock;
+                    }
+                }
+                return null;
+            }
+            
+            function magnetizeBlocks(block1, block2) {
+                const rect1 = block1.getBoundingClientRect();
+                const rect2 = block2.getBoundingClientRect();
+                
+                // Simple magnetize - just snap to the same position
+                block1.style.left = (parseInt(block2.style.left) || 0) + 'px';
+                block1.style.top = (parseInt(block2.style.top) || 0) + 40 + 'px'; // Offset below
+            }
+        }
+        
+        function generateCodeFromBlocks() {
+            let code = "";
+            const blocks = document.getElementById("block-workspace").querySelectorAll('.block:not(.block-placeholder)');
+            
+            blocks.forEach(block => {
+                const type = block.getAttribute('data-type');
+                const text = block.textContent.trim();
+                
+                if (type === 'event') {
+                    if (text.includes('program starts')) {
+                        code += "start();\n";
+                    }
+                }
+                else if (type === 'command') {
+                    if (text.includes('start')) {
+                        code += "start();\n";
+                    }
+                    else if (text.includes('forward')) {
+                        code += "forward(1);\n";
+                    }
+                    else if (text.includes('back')) {
+                        code += "back(1);\n";
+                    }
+                    else if (text.includes('landing')) {
+                        code += "landing();\n";
+                    }
+                    else if (text.includes('right')) {
+                        code += "right(1);\n";
+                    }
+                    else if (text.includes('left')) {
+                        code += "left(1);\n";
+                    }
+                    else if (text.includes('up')) {
+                        code += "up();\n";
+                    }
+                    else if (text.includes('down')) {
+                        code += "down();\n";
+                    }
+                    else if (text.includes('rotate')) {
+                        code += "rotate();\n";
+                    }
+                    else if (text.includes('pin.init')) {
+                        code += "pin.init();\n";
+                    }
+                    else if (text.includes('pin.read')) {
+                        code += "pin.read();\n";
+                    }
+                    else if (text.includes('pin.write')) {
+                        code += "pin.write();\n";
+                    }
+                }
+            });
+            
+            return code;
+        }
+
         window.onload = function() {
             var savedCode = localStorage.getItem('savedCode');
             if (savedCode) {
                 editor.setValue(savedCode);
             }
+            
+            // Initialize block editor
+            initializeBlockEditor();
 
+            // Reset robot position on load
+            position = { x: 0, y: 0 };
+            robot.style.transform = `translate(${position.x}px, ${position.y}px)`;
+
+            mobilePosition = { x: 0, y: 0 };
+            mobileRobot.style.transform = `translate(${mobilePosition.x}px, ${mobilePosition.y}px)`;
         }
+        
         function goToAnotherPage() {
-            window.location.href = 'index.html'; // Замените 'anotherPage.html' на нужный вам файл
+            window.location.href = 'index.html';
         }
   </script>
  </body>
-</html>
+</html> 

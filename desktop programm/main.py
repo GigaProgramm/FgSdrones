@@ -33,7 +33,7 @@ class textIde(ctk.CTk):
         self.port_label = ctk.CTkLabel(self.toolbar, text="com port:")
         self.port_label.pack(pady=5)
 
-        self.port_combo = ctk.CTkComboBox(self.toolbar, values=self.get_serial_ports())
+        self.port_combo = ctk.CTkComboBox(self.toolbar, values=[])
         self.port_combo.pack(pady=5)
 
         # Set the first port as the default selection if there are any ports available
@@ -43,6 +43,9 @@ class textIde(ctk.CTk):
 
         self.send_button = ctk.CTkButton(self.toolbar, text="Upload", command=self.send_code)
         self.send_button.pack(pady=5)
+
+        self.send_line_button = ctk.CTkButton(self.toolbar, text="Send Line", command=self.send_line)
+        self.send_line_button.pack(pady=5)
 
         self.text_area = tk.Text(self, font=("Consolas", 12))
         self.text_area.pack(fill="both", side=ctk.RIGHT, expand=True)
@@ -67,11 +70,36 @@ class textIde(ctk.CTk):
         self.update_line_numbers()
 
         self.serial_port = None
+        self.current_line = 1
+        self.text_area.tag_config('current_line', background='yellow')
+
+        self.port_combo.bind("<FocusIn>", self.update_ports)
 
     def get_serial_ports(self):
         """Получить список доступных последовательных портов"""
         ports = [port.device for port in serial.tools.list_ports.comports()]
         return ports
+
+    def update_ports(self, event=None):
+        """Update the list of available serial ports in the combobox."""
+        start_time = time.time()
+        timeout = 1  # seconds
+        while time.time() - start_time < timeout:
+            ports = self.get_serial_ports()
+            if ports and self.port_combo.get() not in ports:
+                self.port_combo.configure(values=ports)
+                self.port_combo.set(ports[0])
+                return
+            elif ports and not self.port_combo.cget("values"):
+                 self.port_combo.configure(values=ports)
+                 self.port_combo.set(ports[0])
+                 return
+            time.sleep(0.2)  # Check every 200ms
+        # If no new ports are found after the timeout, update with whatever is available
+        ports = self.get_serial_ports()
+        self.port_combo.configure(values=ports)
+        if ports and self.port_combo.get() not in ports:
+            self.port_combo.set(ports[0])
 
     def send_code(self):
         """Отправить код на выбранный последовательный порт"""
@@ -199,6 +227,39 @@ class textIde(ctk.CTk):
             self.serial_port.close()
         self.destroy()
         self.quit()
+
+    def highlight_line(self, line_number):
+        """Highlights the given line number in the text area."""
+        self.text_area.tag_remove('current_line', '1.0', tk.END)  # Remove previous highlights
+        start = f'{line_number}.0'
+        end = f'{line_number}.end'
+        self.text_area.tag_add('current_line', start, end)
+        self.text_area.see(start)  # Scroll to the current line
+
+    def send_line(self):
+        """Отправить код построчно на выбранный последовательный порт"""
+        if self.serial_port is None or not self.serial_port.is_open:
+            try:
+                selected_port = self.port_combo.get()
+                self.serial_port = serial.Serial(selected_port, 9600, timeout=1)
+                time.sleep(2)  # Ждем, чтобы Arduino инициализировался
+            except Exception as e:
+                messagebox.showerror("Ошибка", f"Не удалось открыть порт: {e}")
+                return
+
+        code = self.text_area.get("1.0", tk.END)
+        lines = code.split('\n')
+        if self.current_line <= len(lines):
+            line = lines[self.current_line - 1] + '\n'  # Add newline character
+            self.serial_port.write(line.encode('utf-8'))
+            time.sleep(0.1)  # Give some time to process
+            print(f"Отправлена строка {self.current_line}: {line.strip()}")
+            self.highlight_line(self.current_line)
+            self.current_line += 1
+        else:
+            messagebox.showinfo("Информация", "Весь код отправлен!")
+            self.text_area.tag_remove('current_line', '1.0', tk.END)  # Remove highlight
+            self.current_line = 1  # Reset line number for next run
 
 if __name__ == "__main__":
     app = textIde()
